@@ -146,7 +146,7 @@ final public class MustacheBox {
     - returns: The MustacheBox for *key*.
     */
     public func mustacheBox(forKey key: String) -> MustacheBox {
-        return keyedSubscript?(key: key) ?? Box()
+        return keyedSubscript?(key) ?? Box()
     }
     
     
@@ -506,8 +506,8 @@ final public class MustacheBox {
         let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            arrayValue: @autoclosure(escaping)() -> [MustacheBox]? = nil,
-            dictionaryValue: @autoclosure(escaping)() -> [String: MustacheBox]? = nil)
+            arrayValue: @autoclosure @escaping () -> [MustacheBox]? = nil,
+            dictionaryValue: @autoclosure @escaping () -> [String: MustacheBox]? = nil)
         {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue

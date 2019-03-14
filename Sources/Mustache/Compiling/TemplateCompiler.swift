@@ -221,7 +221,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                        }
                         let templateString = token.templateString
                         let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
-                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: String(templateString[innerContentRange]))
 
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
@@ -251,7 +251,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                        }
                         let templateString = token.templateString
                         let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
-                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: String(templateString[innerContentRange]))
 
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
@@ -392,7 +392,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     private func blockName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let blockName = string.string(byTrimmingCharactersInSet: whiteSpace)
-        if blockName.characters.count == 0 {
+        if blockName.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if blockName.contains(characterFromSet: whiteSpace) {
@@ -405,7 +405,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     private func partialName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let partialName = string.string(byTrimmingCharactersInSet: whiteSpace)
-        if partialName.characters.count == 0 {
+        if partialName.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if partialName.contains(characterFromSet: whiteSpace) {
@@ -425,31 +425,31 @@ extension String {
     }
 
     private func string(byTrimmingFromStartCharactersInSet characterSet: Set<Character>) -> String {
-        var trimStartIndex: Int = characters.count
-        for (index, character) in characters.enumerated() {
+        var trimStartIndex: Int = count
+        for (index, character) in enumerated() {
             if !characterSet.contains(character) {
                 trimStartIndex = index
                 break
             }
         }
-        return self[self.index(startIndex, offsetBy: trimStartIndex) ..< endIndex]
+        return String(self[self.index(startIndex, offsetBy: trimStartIndex) ..< endIndex])
     }
 
     private func string(byTrimmingFromEndCharactersInSet characterSet: Set<Character>) -> String {
-        var trimEndIndex: Int = characters.count
-        for (index, character) in characters.reversed().enumerated() {
+        var trimEndIndex: Int = count
+        for (index, character) in reversed().enumerated() {
             if !characterSet.contains(character) {
                 trimEndIndex = index
                 break
             }
         }
-        return self[startIndex ..< self.index(startIndex, offsetBy: characters.count - trimEndIndex)]
+        return String(self[startIndex ..< self.index(startIndex, offsetBy: count - trimEndIndex)])
     }
 }
 
 extension String {
     func contains(characterFromSet characterSet: Set<Character>) -> Bool {
-        for character in characters {
+        for character in self {
             if characterSet.contains(character) {
                 return true
             }

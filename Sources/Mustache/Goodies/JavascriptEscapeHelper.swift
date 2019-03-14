@@ -52,7 +52,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
             // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box(render: { (info: RenderingInfo) -> Rendering in
-                let rendering = try box.render(info: info)
+                let rendering = try box.render(info)
                 return try self.filter(rendering: rendering)
             })
         case .Section:
@@ -129,7 +129,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
             "\r\n": "\\u000D\\u000A",
         ]
         var escaped = ""
-        for c in string.characters {
+        for c in string {
             if let escapedString = escapeTable[c] {
                 escaped += escapedString
             } else {

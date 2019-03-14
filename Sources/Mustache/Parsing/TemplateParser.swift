@@ -27,12 +27,12 @@ protocol TemplateTokenConsumer {
 
 extension String {
     func hasPrefix(string: String) -> Bool {
-        if string.characters.count > self.characters.count {
+        if string.count > self.count {
             return false
         }
-        for i in 0 ..< string.characters.count {
-            if string.characters[string.index(string.startIndex, offsetBy: i)] !=
-                self.characters[self.index(self.startIndex, offsetBy: i)] {
+        for i in 0 ..< string.count {
+            if string[string.index(string.startIndex, offsetBy: i)] !=
+                self[self.index(self.startIndex, offsetBy: i)] {
                 return false
             }
         }
@@ -51,16 +51,16 @@ final class TemplateParser {
 
     func parse(templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
-        let templateCharacters = templateString.characters
+        let templateCharacters = templateString
 
         let atString = { (index: String.Index, string: String?) -> Bool in
             guard let string = string else {
                 return false
             }
-            guard let endIndex = templateString.index(index, offsetBy: string.characters.count, limitedBy: templateCharacters.endIndex) else {
+            guard let endIndex = templateString.index(index, offsetBy: string.count, limitedBy: templateCharacters.endIndex) else {
                 return false
             }
-            return templateCharacters[index..<endIndex].starts(with: string.characters)
+            return templateCharacters[index..<endIndex].starts(with: string)
         }
 
         var state: State = .Start
@@ -95,7 +95,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .Text(text: templateString[range]),
+                            type: .Text(text: String(templateString[range])),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -110,7 +110,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .Text(text: templateString[range]),
+                            type: .Text(text: String(templateString[range])),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -125,7 +125,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .Text(text: templateString[range]),
+                            type: .Text(text: String(templateString[range])),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -283,7 +283,7 @@ final class TemplateParser {
                 } else if atString(i, currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = templateString.index(startIndex, offsetBy: currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substring(withRange: tagInitialIndex..<i)
-                    let newDelimiters = content.components(separatedByCharactersInSet: CharacterSet.whitespaceAndNewline).filter { $0.characters.count > 0 }
+                    let newDelimiters = content.components(separatedByCharactersInSet: CharacterSet.whitespaceAndNewline).filter { $0.count > 0 }
                     if (newDelimiters.count != 2) {
                         let error = MustacheError(kind: .ParseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
                         tokenConsumer.parser(parser: self, didFailWithError: error)
@@ -319,7 +319,7 @@ final class TemplateParser {
         case .Text(let startIndex, let startLineNumber):
             let range = startIndex..<end
             let token = TemplateToken(
-                type: .Text(text: templateString[range]),
+                type: .Text(text: String(templateString[range])),
                 lineNumber: startLineNumber,
                 templateID: templateID,
                 templateString: templateString,
@@ -383,7 +383,7 @@ final class TemplateParser {
 
 extension String {
     func components(separatedByCharactersInSet characterSet: Set<Character>) -> [String] {
-        return characters.split { characterSet.contains($0) }.map { String($0) }
+        return split { characterSet.contains($0) }.map { String($0) }
     }
 }
 

@@ -345,10 +345,10 @@ final class ExpressionParser {
 
 extension String {
     func substring(withRange range: Range<Index>) -> String {
-        return self[range]
+        return String(self[range])
     }
 
     func substring(fromIndex index: Index) -> String {
-        return self[index ..< endIndex]
+        return String(self[index ..< endIndex])
     }
 }
